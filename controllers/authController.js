@@ -2,7 +2,7 @@ const joi = require("joi");
 const bcrypt = require("bcrypt");
 const UserModel = require("../models/user");
 const userDTO = require("../DTO/user");
-const RefreshToken=require('../models/token');
+const RefreshToken = require("../models/token");
 const jwtservices = require("../services/jwtservice");
 const authController = {
   async Signup(req, res, next) {
@@ -57,10 +57,9 @@ const authController = {
       });
       /// save user
       user = await SignupUser.save();
-      /// tokens 
+      /// tokens
       accessToken = jwtservices.signAccessToken({ _id: user._id }, "30m");
       refreshToken = jwtservices.signRefreshToken({ _id: user._id }, "60m");
-
     } catch (error) {
       return next(error);
     }
@@ -80,7 +79,7 @@ const authController = {
     return res.status(201).json({ user: user_DTO, auth: true });
   },
   ///// Login controller
-  async login(req, res, next) {
+  async Login(req, res, next) {
     const userLogin = joi.object({
       userEmail: joi.string().email().required(),
       userPassword: joi.string().required(),
@@ -145,7 +144,22 @@ const authController = {
       httpOnly: true,
     });
     const user_DTO = new userDTO(user);
-    return res.status(200).json({ user: user_DTO,auth:true });
+    return res.status(200).json({ user: user_DTO, auth: true });
   },
+  ////Logout
+  async Logout(req, res, next) {
+    const { refreshToken } = req.cookies;
+    try {
+      await RefreshToken.deleteOne({ token: refreshToken });
+    } catch (error) {
+      return next(error);
+    }
+    // delete cookies
+    res.clearCookie("accessToken");
+    res.clearCookie("refreshToken");
+
+    // 2. response
+    res.status(200).json({ user: null, auth: false });
+  }
 };
 module.exports = authController;
