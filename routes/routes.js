@@ -3,6 +3,7 @@ const express = require('express');
 const routes=express.Router();
 const authController = require('../controllers/authController');
 const auth = require('../middlewares/auth');
+
 /// signup ////
 
 routes.post('/signup',authController.Signup);
@@ -14,5 +15,9 @@ routes.post('/login',authController.Login);
 ////Logout
 
 routes.post('/logout',auth,authController.Logout);
+
+//// refresh 
+
+routes.get('/refresh',authController.Refresh);
 
 module.exports=routes;
