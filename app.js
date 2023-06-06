@@ -10,6 +10,7 @@ const host=config.HOST;
 const DataBase=config.DATABASE_URL;
 const routes = require('./routes/routes');
 app.use(cors());
+app.use(cookieParser);
 connectdb(DataBase);
 app.use(express.json());
 app.use(routes);
