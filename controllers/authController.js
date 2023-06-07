@@ -121,8 +121,10 @@ const authController = {
     } catch (error) {
       return next(error);
     }
+
     const accessToken = jwtservices.signAccessToken({ _id: user._id }, "30m");
     const refreshToken = jwtservices.signRefreshToken({ _id: user._id }, "60m");
+    
     try {
       await RefreshToken.updateOne(
         {
