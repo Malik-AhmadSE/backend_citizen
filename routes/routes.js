@@ -20,4 +20,17 @@ routes.post('/logout',auth,authController.Logout);
 
 routes.get('/refresh',authController.Refresh);
 
+////////////////////// product routes
+
+// 1.get all product
+routes.get('/product/all',productController.getAll);
+// 2.create product
+routes.post('/product',productController.createProduct);
+// 3.update product by id 
+routes.put('/product',productController.updateProduct);
+// 4.get product by id 
+routes.get('/product/:id',productController.getProductById);
+// 5.delete product by id
+routes.delete('/product/:id',productController.deleteProductById);
+
 module.exports=routes;

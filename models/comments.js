@@ -2,7 +2,7 @@ const mongoose=require('mongoose');
 
 const commentSchema=mongoose.Schema({
     userName :{type:mongoose.SchemaTypes.ObjectId,ref:'user'},
-    content:{type:String},
+    commentData:{type:String},
 },
     {timestamps:true}
 )
