@@ -2,6 +2,7 @@ const express = require('express');
 
 const routes=express.Router();
 const authController = require('../controllers/authController');
+const productController=require('../controllers/productController');
 const auth = require('../middlewares/auth');
 
 /// signup ////
@@ -20,17 +21,17 @@ routes.post('/logout',auth,authController.Logout);
 
 routes.get('/refresh',authController.Refresh);
 
-////////////////////// product routes
+////////////////////// product routes ///////////
 
 // 1.get all product
 routes.get('/product/all',productController.getAll);
 // 2.create product
-routes.post('/product',productController.createProduct);
+routes.post('/product',auth,productController.createProduct);
 // 3.update product by id 
-routes.put('/product',productController.updateProduct);
+routes.put('/product',auth,productController.updateProduct);
 // 4.get product by id 
 routes.get('/product/:id',productController.getProductById);
 // 5.delete product by id
-routes.delete('/product/:id',productController.deleteProductById);
+routes.delete('/product/:id',auth,productController.deleteProductById);
 
 module.exports=routes;

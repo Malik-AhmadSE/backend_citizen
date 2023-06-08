@@ -5,9 +5,10 @@ const productSchema=mongoose.Schema({
     price:{type:mongoose.Types.Decimal128,required:true},
     nature:{type:String,required:true},
     discription:{type:String,required:true},
-    favorite:{type:Number,default:null},
-    discount:{type:Number,default:null},
+    favorite:{type:Number},
+    discount:{type:Number},
     image:{type:Array,required:true},
+    video:{type:String},
     eventName:{type:mongoose.SchemaTypes.ObjectId,ref:'crousal'},
 },
     {timestamps:true}
