@@ -26,9 +26,9 @@ routes.get('/refresh',authController.Refresh);
 // 1.get all product
 routes.get('/product/all',productController.getAll);
 // 2.create product
-routes.post('/product',auth,productController.createProduct);
+routes.post('/addproduct',auth,productController.createProduct);
 // 3.update product by id 
-routes.put('/product',auth,productController.updateProduct);
+routes.put('/updateproduct',auth,productController.updateProduct);
 // 4.get product by id 
 routes.get('/product/:id',productController.getProductById);
 // 5.delete product by id

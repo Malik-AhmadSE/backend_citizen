@@ -14,6 +14,4 @@ const userSchema=mongoose.Schema({
 // creating model of user
 
 const UserModel=mongoose.model('user',userSchema);
-
-
 module.exports=UserModel;
