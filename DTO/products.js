@@ -5,10 +5,10 @@ function productDTO(product){
         this.price = product.price;
         this.nature = product.nature;
         this.discription = product.discription;
-        this.favorite=product.favorite;
         this.discount=product.discount;
         this.image=product.image;
         this.video=product.video;
+
     }
 
 

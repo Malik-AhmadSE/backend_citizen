@@ -4,6 +4,7 @@ const routes=express.Router();
 const authController = require('../controllers/authController');
 const productController=require('../controllers/productController');
 const auth = require('../middlewares/auth');
+const favoriteController = require('../controllers/favoriteController');
 
 /// signup ////
 
@@ -25,13 +26,18 @@ routes.get('/refresh',authController.Refresh);
 
 // 1.get all product
 routes.get('/product/all',productController.getAll);
+// //2.GET ALL ADMIN PRODUCT
+// routes.get('admin/product/all',productController.getAllproduct);
 // 2.create product
 routes.post('/addproduct',auth,productController.createProduct);
 // 3.update product by id 
 routes.put('/updateproduct',auth,productController.updateProduct);
 // 4.get product by id 
-routes.get('/product/:id',productController.getProductById);
+routes.get('/getproduct/:id',productController.getProductById);
 // 5.delete product by id
-routes.delete('/product/:id',auth,productController.deleteProductById);
+routes.delete('/DeleteProduct/:id',auth,productController.deleteProductById);
+//////////// rating 
+
+routes.post('/favorite',favoriteController.createFavorite);
 
 module.exports=routes;
