@@ -7,8 +7,8 @@ const favoriteController = {
   async createFavorite(req, res, next) {
     const createfavschema = joi.object({
             favorite:joi.boolean(),
-            user:joi.string().regex(mongodbIdPattern).required(),
-            product: joi.string().regex(mongodbIdPattern).required(),
+            productId: joi.string().regex(mongodbIdPattern).required(),
+            userId:joi.string().regex(mongodbIdPattern).required()
         });
      
     const { error } = createfavschema.validate(req.body);
@@ -19,16 +19,22 @@ const favoriteController = {
     
     const {
       favorite,
-      user,
-      product,
+      productId,
+      userId,
     } = req.body;
     
     let newfav;
     try {
+      const ratingexist=await rating.findOne({productId:productId,userId:userId });
+      if(ratingexist){
+        console.log(ratingexist);
+        await rating.findOneAndUpdate({productId,userId},{favorite,productId,userId});
+        return res.status(409).json({'message':'rating updated'});
+      }
       newfav = new rating({
        favorite,
-       user,
-       product,
+       productId,
+       userId,
       });
       await newfav.save();
     } catch (error) {
@@ -36,12 +42,10 @@ const favoriteController = {
     }
 
     const favDto = new favDTO(newfav);
-
     return res.status(201).json({ favorite: favDto });
+
+    
   },
-  // for updating product
-  async updateProduct(req, res, next) {},
- 
 };
 
 module.exports = favoriteController;

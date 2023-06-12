@@ -38,6 +38,6 @@ routes.get('/getproduct/:id',productController.getProductById);
 routes.delete('/DeleteProduct/:id',auth,productController.deleteProductById);
 //////////// rating 
 
-routes.post('/favorite',favoriteController.createFavorite);
+routes.post('/favorite',auth,favoriteController.createFavorite);
 
 module.exports=routes;
