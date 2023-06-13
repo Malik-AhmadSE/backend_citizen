@@ -29,9 +29,9 @@ routes.get('/product/all',productController.getAll);
 // //2.GET ALL ADMIN PRODUCT
 // routes.get('admin/product/all',productController.getAllproduct);
 // 2.create product
-routes.post('/addproduct',auth,productController.createProduct);
+routes.post('/product/add',auth,productController.createProduct);
 // 3.update product by id 
-routes.put('/updateproduct',auth,productController.updateProduct);
+routes.put('/product/update',auth,productController.updateProduct);
 // 4.get product by id 
 routes.get('/getproduct/:id',productController.getProductById);
 // 5.delete product by id
