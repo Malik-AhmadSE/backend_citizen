@@ -1,10 +1,10 @@
 const joi = require("joi");
-const { BACKEND_SERVER_PATH } = require("../config/index");
-const fs = require("fs");
 const ProductModel = require("../models/products");
 const productDTO = require("../DTO/products");
 const rating=require('../models/rating');
 const mongodbIdPattern = /^[0-9a-fA-F]{24}$/;
+const uploadImage=require('../services/multerimage');
+const uploadVideo = require("../services/multerimage");
 const productController = {
   // for creating the product
   async createProduct(req, res, next) {
@@ -31,35 +31,11 @@ const productController = {
       video,
 
     } = req.body;
-    let bufferImage,
-      imagePath,
-      mainImagepath = [];
-    for (let i = 0; i < image.length; i++) {
-      bufferImage = Buffer.from(
-        image[i].replace(/^data:image\/(png|jpg|jpeg);base64,/, ""),
-        "base64"
-      );
-      imagePath = `${Date.now()}-${productName}-${i}.png`;
-      mainImagepath.push(`${BACKEND_SERVER_PATH}/storage/${imagePath}`);
-      try {
-        fs.writeFileSync(`storage/images/${imagePath}`, bufferImage);
-      } catch (error) {
-        return next(error);
-      }
-    }
-    let bufferVideo, videoPath;
-    if (video) {
-      bufferVideo = Buffer.from(
-        video.replace(/^data:video\/(mp4);base64,/, ""),
-        "base64"
-      );
-      videoPath = `${Date.now()}-${productName}.mp4`;
-
-      try {
-        fs.writeFileSync(`storage/videos/${videoPath}`, bufferVideo);
-      } catch (error) {
-        return next(error);
-      }
+    //////////// using multer ///////
+    try{
+    const uploadImages =await uploadImage.array('image');
+    }catch(error){
+      return res.status(406).json({message:'image not uploaded'});
     }
     let newProduct;
     try {
@@ -83,7 +59,9 @@ const productController = {
     return res.status(201).json({ product: productDto });
   },
   // for updating product
-  async updateProduct(req, res, next) {},
+  async updateProduct(req, res, next) {
+    
+  },
   // for getting all product
   async getAll(req, res, next) {
     try {
@@ -136,14 +114,10 @@ const productController = {
     if (error) {
       return next(error);
     }
-    let productbyid;
 
     const { id } = req.params;
     try {
-      productbyid = await ProductModel.deleteOne({ _id: id });
-      if (productbyid._id == null) {
-        return next(error);
-      }
+      await ProductModel.deleteOne({ _id: id });
     } catch (error) {
       return next(error);
     }

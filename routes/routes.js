@@ -35,7 +35,7 @@ routes.put('/product/update',auth,productController.updateProduct);
 // 4.get product by id 
 routes.get('/getproduct/:id',productController.getProductById);
 // 5.delete product by id
-routes.delete('/DeleteProduct/:id',auth,productController.deleteProductById);
+routes.delete('/deleteProduct/:id',auth,productController.deleteProductById);
 //////////// rating 
 
 routes.post('/favorite',auth,favoriteController.createFavorite);
