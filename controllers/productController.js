@@ -2,9 +2,9 @@ const joi = require("joi");
 const ProductModel = require("../models/products");
 const productDTO = require("../DTO/products");
 const rating=require('../models/rating');
-const mongodbIdPattern = /^[0-9a-fA-F]{24}$/;
 const uploadImage=require('../services/multerimage');
 const uploadVideo = require("../services/multerimage");
+const mongodbIdPattern = /^[0-9a-fA-F]{24}$/;
 const productController = {
   // for creating the product
   async createProduct(req, res, next) {
@@ -60,6 +60,30 @@ const productController = {
   },
   // for updating product
   async updateProduct(req, res, next) {
+    const updateproductschema = joi.object({
+      productName: joi.string().required(),
+      price: joi.number().required(),
+      nature: joi.string().required(),
+      discription: joi.string().required(),
+      discount: joi.number(),
+      image: joi.array().required(),
+      video: joi.string().required(),
+      productId:joi.string().regex(mongodbIdPattern).required()
+    });
+    const { error } = updateproductschema.validate(req.body);
+    if (error) {
+      return next(error);
+    }
+    const {
+      productName,
+      price,
+      nature,
+      discription,
+      discount,
+      image,
+      video,
+      productId
+    } = req.body;
     
   },
   // for getting all product
