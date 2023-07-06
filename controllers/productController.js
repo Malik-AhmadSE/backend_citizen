@@ -21,6 +21,9 @@ const productController = {
     if (error) {
       return next(error);
     }
+
+
+
     const { productName, price, nature, discription,favorite, discount, image, video } =
       req.body;
 
@@ -72,10 +75,15 @@ const productController = {
       return next(error);
     }
 
+
     const productDto = new productDTO(newProduct);
 
     return res.status(201).json({ product: productDto });
       
+
+
+
+
   },
   // for updating product
   async updateProduct(req, res, next) {},
@@ -128,6 +136,28 @@ const productController = {
   },
   // for deleting the product using id
   async deleteProductById(req, res, next) {},
+
+  async fileUpload(req,res,next){
+    console.log(req.files);
+    let url="http://localhost:8000/files/";
+   
+
+    const videoFiles = req.files.filter((file) => file.mimetype.includes('video'));
+    const imageFiles = req.files.filter((file) => file.mimetype.includes('image'));
+    
+    const videoUrls = videoFiles.map((file) => url + file.filename);
+    const imageUrls = imageFiles.map((file) => url + file.filename);
+    
+    req.body.video = videoUrls;
+    req.body.item_pic = imageUrls;
+    
+    return res.status(200).json({
+      message: 'Files uploaded',
+      videos: videoUrls,
+      images: imageUrls,
+    });
+    
+  }
 };
 
 module.exports = productController;

@@ -11,6 +11,8 @@ const DataBase=config.DATABASE_URL;
 const routes = require('./routes/routes');
 app.use(cors());
 app.use(cookieParser());
+app.use(express.static(__dirname + "/public/files"));
+app.use(express.static("public"));
 connectdb(DataBase);
 app.use(express.json());
 app.use(routes);
