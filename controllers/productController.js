@@ -2,51 +2,55 @@ const joi = require("joi");
 const ProductModel = require("../models/products");
 const productDTO = require("../DTO/products");
 const rating=require('../models/rating');
-const uploadImage=require('../services/multerimage');
-const uploadVideo = require("../services/multerimage");
 const mongodbIdPattern = /^[0-9a-fA-F]{24}$/;
+const multer = require('multer');
+const path = require('path');
+
+var storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, path.join(__dirname, '../public/images/'));
+  },
+  filename: function (req, file, cb) {
+    cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
+  }
+});
+ 
+module.exports.upload = multer({
+  storage: storage,
+  limits: { fieldSize: 5 * 1024 },
+});
+
+
 const productController = {
   // for creating the product
   async createProduct(req, res, next) {
-    const createproductschema = joi.object({
+    const createProductSchema = joi.object({
       productName: joi.string().required(),
       price: joi.number().required(),
       nature: joi.string().required(),
       discription: joi.string().required(),
       discount: joi.number(),
-      image: joi.array().required(),
-      video: joi.string().required(),
     });
-    const { error } = createproductschema.validate(req.body);
+
+    const { error } = createProductSchema.validate(req.body);
     if (error) {
       return next(error);
     }
-    const {
-      productName,
-      price,
-      nature,
-      discription,
-      discount,
-      image,
-      video,
 
-    } = req.body;
-    //////////// using multer ///////
-    try{
-    const uploadImages =await uploadImage.array('image');
-    }catch(error){
-      return res.status(406).json({message:'image not uploaded'});
-    }
-    let newProduct;
+    const { productName, price, nature, discription, favorite, discount } = req.body;
+
     try {
-      newProduct = new ProductModel({
+      const imagePaths = await req.files.images.map((file) => file.path);
+      const videoPath = await req.file.video.path;
+
+      const newProduct = new ProductModel({
         productName,
         price,
         nature,
         discription,
         discount,
-        image: mainImagepath,
-        video: `${BACKEND_SERVER_PATH}/storage/${videoPath}`,
+        image: imagePaths,
+        video: videoPath,
       });
 
       await newProduct.save();
@@ -58,6 +62,7 @@ const productController = {
 
     return res.status(201).json({ product: productDto });
   },
+
   // for updating product
   async updateProduct(req, res, next) {
     const updateproductschema = joi.object({

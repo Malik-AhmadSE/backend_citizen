@@ -5,7 +5,7 @@ const authController = require('../controllers/authController');
 const productController=require('../controllers/productController');
 const auth = require('../middlewares/auth');
 const favoriteController = require('../controllers/favoriteController');
-
+const {upload} =require("../middlewares/multer")
 /// signup ////
 
 routes.post('/signup',authController.Signup);
