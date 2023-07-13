@@ -5,6 +5,7 @@ const authController = require('../controllers/authController');
 const productController=require('../controllers/productController');
 const auth = require('../middlewares/auth');
 const favoriteController = require('../controllers/favoriteController');
+const ChartController=require('../controllers/charts');
 const {upload} =require("../middlewares/multer")
 /// signup ////
 
@@ -40,4 +41,6 @@ routes.delete('/deleteProduct/:id',auth,productController.deleteProductById);
 
 routes.post('/favorite',auth,favoriteController.createFavorite);
 
+////////////////////// charts /////////////
+routes.get('/usercount',ChartController.UserCount);
 module.exports=routes;
