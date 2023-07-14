@@ -7,6 +7,7 @@ const mongodbIdPattern = /^[0-9a-fA-F]{24}$/;
 const productController = {
   // for creating the product
   async createProduct(req, res, next) {
+
     const createproductschema = joi.object({
       productName: joi.string().required(),
       price: joi.number().required(),
@@ -22,41 +23,11 @@ const productController = {
       return next(error);
     }
 
-
-
+console.log("multer data request : ",req.file)
+return "true"
     const { productName, price, nature, discription,favorite, discount, image, video } =
       req.body;
 
-     
-
-      let bufferImage,imagePath,mainImagepath=[];
-      for (let i = 0; i < image.length; i++) {
-        bufferImage = Buffer.from(
-          image[i].replace(/^data:image\/(png|jpg|jpeg);base64,/, ''),
-          'base64'
-        );
-        imagePath = `${Date.now()}-${productName}-${i}.png`;
-        mainImagepath.push(`${BACKEND_SERVER_PATH}/storage/${imagePath}`); 
-        try {
-          fs.writeFileSync(`storage/images/${imagePath}`, bufferImage); 
-        } catch (error) {
-          return next(error); 
-        }
-      }
-      let bufferVideo,videoPath;
-      if(video){
-        bufferVideo = Buffer.from(
-               video.replace(/^data:video\/(mp4);base64,/, ''),
-                'base64'
-        );
-        videoPath = `${Date.now()}-${productName}.mp4`;
-
-        try {
-                fs.writeFileSync(`storage/videos/${videoPath}`, bufferVideo); 
-              } catch (error) {
-                return next(error); 
-              }
-      }
     let newProduct;
     try {
       newProduct = new ProductModel({
@@ -66,8 +37,8 @@ const productController = {
         discription, 
         favorite,
         discount, 
-        image:mainImagepath,
-        video:`${BACKEND_SERVER_PATH}/storage/${videoPath}`,
+        image,
+        video,
       });
 
       await newProduct.save();
@@ -75,15 +46,10 @@ const productController = {
       return next(error);
     }
 
-
     const productDto = new productDTO(newProduct);
 
     return res.status(201).json({ product: productDto });
       
-
-
-
-
   },
   // for updating product
   async updateProduct(req, res, next) {},
