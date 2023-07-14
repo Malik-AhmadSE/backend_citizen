@@ -7,6 +7,12 @@ const mongodbIdPattern = /^[0-9a-fA-F]{24}$/;
 const productController = {
   // for creating the product
   async createProduct(req, res, next) {
+    try {
+    console.log("create call")
+    console.log("image : ",req.files.image)
+    console.log("video : ",req.files.video)
+console.log("landingImage : ",req.files.landingImage)
+
     const createproductschema = joi.object({
       productName: joi.string().required(),
       price: joi.number().required(),
@@ -14,64 +20,53 @@ const productController = {
       discription: joi.string().required(),
       favorite:joi.bool(),
       discount: joi.number(),
-      image: joi.array().required(),
-      video: joi.string().required(),
+      //image: joi.array().required(),
+     // video: joi.string().required(),
     });
     const { error } = createproductschema.validate(req.body);
     if (error) {
       return next(error);
     }
+ let url="http://localhost:8000/files/";
+   
 
+ 
+    
+    const videoUrls = req.files.video.map((file)=>url+file.filename);
+    const imageUrls = req.files.image.map((file) => url + file.filename);
+    const landingimage=req.files.landingImage.map((file)=>url+file.filename);
+    
+   
+req.body.landingImage=landingimage[0];
+req.body.video=videoUrls[0];
+req.body.image=imageUrls
+    return res.status(200).json({
+      message: 'Files uploaded',
+      body:req.body
+    });
 
-
-    const { productName, price, nature, discription,favorite, discount, image, video } =
+    const { productName, price, nature,landingImage, discription, discount, image, video } =
       req.body;
 
      
-
-      let bufferImage,imagePath,mainImagepath=[];
-      for (let i = 0; i < image.length; i++) {
-        bufferImage = Buffer.from(
-          image[i].replace(/^data:image\/(png|jpg|jpeg);base64,/, ''),
-          'base64'
-        );
-        imagePath = `${Date.now()}-${productName}-${i}.png`;
-        mainImagepath.push(`${BACKEND_SERVER_PATH}/storage/${imagePath}`); 
-        try {
-          fs.writeFileSync(`storage/images/${imagePath}`, bufferImage); 
-        } catch (error) {
-          return next(error); 
-        }
-      }
-      let bufferVideo,videoPath;
-      if(video){
-        bufferVideo = Buffer.from(
-               video.replace(/^data:video\/(mp4);base64,/, ''),
-                'base64'
-        );
-        videoPath = `${Date.now()}-${productName}.mp4`;
-
-        try {
-                fs.writeFileSync(`storage/videos/${videoPath}`, bufferVideo); 
-              } catch (error) {
-                return next(error); 
-              }
-      }
+  
     let newProduct;
-    try {
+    
       newProduct = new ProductModel({
         productName, 
         price, 
         nature, 
         discription, 
-        favorite,
+        favorite:false,
         discount, 
-        image:mainImagepath,
-        video:`${BACKEND_SERVER_PATH}/storage/${videoPath}`,
+        image,
+        video,
+        landingImage
       });
 
       await newProduct.save();
     } catch (error) {
+      console.log(error)
       return next(error);
     }
 
@@ -131,7 +126,6 @@ const productController = {
       }
   
       const productdto = new productDTO(productbyid);
-  
       return res.status(200).json({ product: productdto });
   },
   // for deleting the product using id
@@ -142,11 +136,11 @@ const productController = {
     let url="http://localhost:8000/files/";
    
 
-    const videoFiles = req.files.filter((file) => file.mimetype.includes('video'));
-    const imageFiles = req.files.filter((file) => file.mimetype.includes('image'));
+    const videoFiles = req.files?.filter((file) => file.mimetype.includes('video'));
+    const imageFiles = req.files?.filter((file) => file.mimetype.includes('image'));
     
-    const videoUrls = videoFiles.map((file) => url + file.filename);
-    const imageUrls = imageFiles.map((file) => url + file.filename);
+    const videoUrls = videoFiles?.map((file) => url + file.filename);
+    const imageUrls = imageFiles?.map((file) => url + file.filename);
     
     req.body.video = videoUrls;
     req.body.item_pic = imageUrls;

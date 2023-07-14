@@ -17,6 +17,9 @@ connectdb(DataBase);
 app.use(express.json());
 app.use(routes);
 app.use(errorHandler);
+app.get("/",(req,res)=>{
+    res.send("hello world")
+})
 app.listen(port,host,()=>{
     console.log(`http://${host}:${port}`);
 })
