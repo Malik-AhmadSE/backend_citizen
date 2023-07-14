@@ -38,10 +38,5 @@ routes.put('/updateproduct',auth,productController.updateProduct);
 routes.get('/product/:id',productController.getProductById);
 // 5.delete product by id
 routes.delete('/product/:id',auth,productController.deleteProductById);
-// files upload 
-routes.post('/upload',upload.fields([
-    { name: 'image', maxCount: 5 },
-    { name: 'video', maxCount: 1 },
-    {name:'landingImage',maxCount:1}
-  ]),productController.fileUpload)
+
 module.exports=routes;
