@@ -9,6 +9,7 @@ const productSchema=mongoose.Schema({
     discount:{type:Number},
     image:{type:Array,required:true},
     video:{type:String,required:true},
+    landingImage:{type:String,required:true}
 },
     {timestamps:true}
 )

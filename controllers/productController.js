@@ -40,10 +40,10 @@ console.log("landingImage : ",req.files.landingImage)
 req.body.landingImage=landingimage[0];
 req.body.video=videoUrls[0];
 req.body.image=imageUrls
-    return res.status(200).json({
-      message: 'Files uploaded',
-      body:req.body
-    });
+    // return res.status(200).json({
+    //   message: 'Files uploaded',
+    //   body:req.body
+    // });
 
     const { productName, price, nature,landingImage, discription, discount, image, video } =
       req.body;
@@ -64,7 +64,8 @@ req.body.image=imageUrls
         landingImage
       });
 
-      await newProduct.save();
+     const data= await newProduct.save();
+     res.send(data)
     } catch (error) {
       console.log(error)
       return next(error);
