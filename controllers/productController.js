@@ -8,11 +8,7 @@ const productController = {
   // for creating the product
   async createProduct(req, res, next) {
     try {
-    console.log("create call")
-    console.log("image : ",req.files.image)
-    console.log("video : ",req.files.video)
-console.log("landingImage : ",req.files.landingImage)
-
+   
     const createproductschema = joi.object({
       productName: joi.string().required(),
       price: joi.number().required(),
@@ -29,9 +25,6 @@ console.log("landingImage : ",req.files.landingImage)
     }
  let url="http://localhost:8000/files/";
    
-
- 
-    
     const videoUrls = req.files.video.map((file)=>url+file.filename);
     const imageUrls = req.files.image.map((file) => url + file.filename);
     const landingimage=req.files.landingImage.map((file)=>url+file.filename);
@@ -50,9 +43,9 @@ req.body.image=imageUrls
 
      
   
-    let newProduct;
+   
     
-      newProduct = new ProductModel({
+    const newProduct = new ProductModel({
         productName, 
         price, 
         nature, 
@@ -64,17 +57,17 @@ req.body.image=imageUrls
         landingImage
       });
 
-     const data= await newProduct.save();
-     res.send(data)
+      const data= await newProduct.save();
+      res.send(data)
+      
+          // const productDto = new productDTO(newProduct);
+      
+          // return res.status(201).json({ product: productDto });
     } catch (error) {
       console.log(error)
       return next(error);
     }
 
-
-    const productDto = new productDTO(newProduct);
-
-    return res.status(201).json({ product: productDto });
       
 
 
