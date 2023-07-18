@@ -35,28 +35,23 @@ const productController = {
   req.body.image = [];
 }
 console.log(req.body)
-    res.send("true")
-    // return res.status(200).json({
-    //   message: 'Files uploaded',
-    //   body:req.body
-    // });
-
+   
     const { productName, price, nature,landingImage, description, discount, image, video } =
       req.body;
 
-    // const newProduct = new ProductModel({
-    //     productName, 
-    //     price, 
-    //     nature, 
-    //     description, 
-    //     favorite:false,
-    //     discount, 
-    //     image,
-    //     video,
-    //     landingImage
-    //   });
-     // const data= await newProduct.save();
-     // res.send(data)
+    const newProduct = new ProductModel({
+        productName, 
+        price, 
+        nature, 
+        description, 
+        favorite:false,
+        discount, 
+        image,
+        video,
+        landingImage
+      });
+     const data= await newProduct.save();
+     res.send(data)
       
           // const productDto = new productDTO(newProduct);
       
@@ -65,12 +60,6 @@ console.log(req.body)
       console.log(error)
       return next(error);
     }
-
-      
-
-
-
-
   },
   // for updating product
   async updateProduct(req, res, next) {},
