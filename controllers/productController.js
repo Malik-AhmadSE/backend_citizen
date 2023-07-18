@@ -8,7 +8,9 @@ const productController = {
   // for creating the product
   async createProduct(req, res, next) {
     try {
-   
+   console.log("add product call")
+   //console.log("files : ",req.files)
+  // console.log("body : ",req.body)
     const createproductschema = joi.object({
       productName: joi.string().required(),
       price: joi.number().required(),
@@ -19,46 +21,42 @@ const productController = {
       //image: joi.array().required(),
      // video: joi.string().required(),
     });
-    const { error } = createproductschema.validate(req.body);
-    if (error) {
-      return next(error);
-    }
+    // const { error } = createproductschema.validate(req.body);
+    // if (error) {
+    //   return next(error);
+    // }
  let url="http://localhost:8000/files/";
-   
-    const videoUrls = req.files.video.map((file)=>url+file.filename);
-    const imageUrls = req.files.image.map((file) => url + file.filename);
-    const landingimage=req.files.landingImage.map((file)=>url+file.filename);
-    
-   
-req.body.landingImage=landingimage[0];
-req.body.video=videoUrls[0];
-req.body.image=imageUrls
+
+ req.body.landingImage=url+req.files["landingImage"][0].filename;
+ req.body.video=url+req.files["video"][0].filename;
+ if (req.files && req.files["image"]) {
+  req.body.image = req.files["image"].map(image => url + image.filename);
+} else {
+  req.body.image = [];
+}
+console.log(req.body)
+    res.send("true")
     // return res.status(200).json({
     //   message: 'Files uploaded',
     //   body:req.body
     // });
 
-    const { productName, price, nature,landingImage, discription, discount, image, video } =
+    const { productName, price, nature,landingImage, description, discount, image, video } =
       req.body;
 
-     
-  
-   
-    
-    const newProduct = new ProductModel({
-        productName, 
-        price, 
-        nature, 
-        discription, 
-        favorite:false,
-        discount, 
-        image,
-        video,
-        landingImage
-      });
-
-      const data= await newProduct.save();
-      res.send(data)
+    // const newProduct = new ProductModel({
+    //     productName, 
+    //     price, 
+    //     nature, 
+    //     description, 
+    //     favorite:false,
+    //     discount, 
+    //     image,
+    //     video,
+    //     landingImage
+    //   });
+     // const data= await newProduct.save();
+     // res.send(data)
       
           // const productDto = new productDTO(newProduct);
       
