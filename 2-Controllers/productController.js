@@ -1,7 +1,7 @@
 const joi = require("joi");
 const { BACKEND_SERVER_PATH } = require("../config/index");
 const fs = require('fs');
-const ProductModel=require('../models/products');
+const ProductModel=require('../4-Models/products');
 const productDTO=require('../DTO/products');
 const mongodbIdPattern = /^[0-9a-fA-F]{24}$/;
 const productController = {

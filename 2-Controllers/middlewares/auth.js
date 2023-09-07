@@ -1,6 +1,6 @@
-const JWTService = require("../services/jwtservice");
-const User = require("../models/user");
-const UserDTO = require("../DTO/user");
+const JWTService = require("../../3-Services/jwtservice");
+const User = require("../../4-Models/user");
+const UserDTO = require("../../DTO/user");
 
 const auth = async (req, res, next) => {
   try {

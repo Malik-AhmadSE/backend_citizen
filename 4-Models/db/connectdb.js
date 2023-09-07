@@ -1,6 +1,6 @@
 ///// importing the config file
 const mongoose = require("mongoose");
-const config=require('../config/index');
+const config=require('../../config/index');
 const DATABASE_OPTIONS=config.DATABASE_OPTIONS;
 const connectdb = async (Database) => {
   try {

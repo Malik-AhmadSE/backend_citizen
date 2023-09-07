@@ -1,9 +1,9 @@
 const joi = require("joi");
 const bcrypt = require("bcrypt");
-const UserModel = require("../models/user");
+const UserModel = require("../4-Models/user");
 const userDTO = require("../DTO/user");
-const RefreshToken = require("../models/token");
-const jwtservices = require("../services/jwtservice");
+const RefreshToken = require("../4-Models/token");
+const jwtservices = require("../3-Services/jwtservice");
 const authController = {
   async Signup(req, res, next) {
     const SignupSchema = joi.object({
