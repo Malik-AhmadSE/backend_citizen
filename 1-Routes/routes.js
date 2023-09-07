@@ -1,10 +1,10 @@
 const express = require('express');
 
 const routes=express.Router();
-const authController = require('../controllers/authController');
-const productController=require('../controllers/productController');
-const auth = require('../middlewares/auth');
-const {upload} =require("../middlewares/multerFileHndler")
+const authController = require('../2-Controllers/authController');
+const productController=require('../2-Controllers/productController');
+const auth = require('../2-Controllers/middlewares/auth');
+const {upload} =require("../2-Controllers/middlewares/multerFileHndler")
 /// signup ////
 
 routes.post('/signup',authController.Signup);
