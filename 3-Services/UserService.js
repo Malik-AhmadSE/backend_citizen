@@ -1,4 +1,4 @@
-const User = require("../4-Models/UserModel");
+const User = require("../4-Models/user");
 
 module.exports.addService = async (body) => {
  

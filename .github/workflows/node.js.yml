@@ -1,0 +1,35 @@
+name: CI/CD for Nodejs website deploy in Linux VPS
+on:
+  push: 
+    branches: [ master ]
+jobs:
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    environment: FARMLINK
+    steps:
+    - name: executing remote ssh commands using password
+      uses: appleboy/ssh-action@master
+      with:
+        host: 40.121.89.100
+        username: ahmad
+        password: AhmadMalik@786
+        port: 22
+        script: |
+          cd /var/www/backend_citizen
+          sudo git pull origin master
+          if [[ $(git branch --show-current) != "master" ]]; then
+          git checkout master
+          fi
+          pm2 stop app
+          pm2 delete app
+          sudo npm install
+          pm2 start app.js
+          if [[ $? ]]
+          then
+          echo "Congratulation Website Update"
+          else
+          echo " Website Not Update"
+          fi
+          exit
