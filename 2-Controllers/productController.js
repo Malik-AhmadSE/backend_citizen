@@ -105,7 +105,24 @@ console.log(image_data);
       return res.status(200).json({ product: productdto });
   },
   // for deleting the product using id
-  async deleteProductById(req, res, next) {},
+  async deleteProductById(req, res, next) {
+    const deleteSchema = joi.object({
+      id: joi.string().regex(mongodbIdPattern).required(),
+    });
+
+    const { error } = deleteSchema.validate(req.params);
+    if(error){
+      return next(error);
+    }
+    const { id } = req.params;
+    try {
+      await ProductModel.deleteOne({ _id : id });
+    } catch (error) {
+      return next(error);
+    }
+
+    return res.status(200).json({ message: "product deleted" });
+  },
 
 };
 

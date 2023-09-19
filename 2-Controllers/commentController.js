@@ -72,7 +72,9 @@ const commentController = {
         });
     
         const { error } = deleteSchema.validate(req.params);
-        
+        if(error){
+          return next(error);
+        }
         const { id } = req.params;
         try {
           await Comment.deleteOne({ _id : id });

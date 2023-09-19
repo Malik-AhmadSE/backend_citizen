@@ -49,7 +49,9 @@ const crouselController = {
         });
     
         const { error } = deleteSchema.validate(req.params);
-        
+        if(error){
+          return next(error);
+        }
         const { id } = req.params;
         try {
           await crouselModel.deleteOne({ _id : id });

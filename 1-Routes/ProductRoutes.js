@@ -23,6 +23,6 @@ ProductRoutes.put('/update',auth,productController.updateProduct);
 // 4.get product by id 
 ProductRoutes.get('/product/:id',productController.getProductById);
 // 5.delete product by id
-ProductRoutes.delete('/product/:id',auth,productController.deleteProductById);
+ProductRoutes.delete('/delete/:id',auth,productController.deleteProductById);
 
 module.exports=ProductRoutes;
