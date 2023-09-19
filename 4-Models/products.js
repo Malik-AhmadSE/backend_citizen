@@ -5,7 +5,6 @@ const productSchema=mongoose.Schema({
     price:{type:mongoose.Types.Decimal128,required:true},
     category:{type:String},
     description:{type:String,required:true},
-    favorite:{type:Boolean,default:false},
     discount:{type:Number},
     image:{type:Array},
     video:{type:String},
