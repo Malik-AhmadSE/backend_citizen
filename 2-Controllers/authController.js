@@ -4,6 +4,7 @@ const UserModel = require("../4-Models/user");
 const userDTO = require("../DTO/user");
 const RefreshToken = require("../4-Models/token");
 const jwtservices = require("../3-Services/jwtservice");
+const mongodbIdPattern = /^[0-9a-fA-F]{24}$/;
 const authController = {
   async Signup(req, res, next) {
     const SignupSchema = joi.object({
@@ -46,7 +47,6 @@ const authController = {
     const Hashpassword = await bcrypt.hash(userPassword, 10);
     let accessToken;
     let refreshToken;
-
     let user;
     try {
       /// saving the data
@@ -67,12 +67,13 @@ const authController = {
     await jwtservices.storeRefreshToken(refreshToken, user._id);
 
     // send tokens in cookie
-    await res.cookie("accessToken", accessToken, {
+    
+    res.cookie("accessToken", accessToken, {
       maxAge: 1000 * 60 * 60 * 24,
       httpOnly: true,
     });
 
-    await res.cookie("refreshToken", refreshToken, {
+    res.cookie("refreshToken", refreshToken, {
       maxAge: 1000 * 60 * 60 * 24,
       httpOnly: true,
     });
@@ -97,7 +98,6 @@ const authController = {
     let user;
 
     try {
-      // match username
       user = await UserModel.findOne({ userEmail });
 
       if (!user) {
@@ -124,7 +124,8 @@ const authController = {
 
     const accessToken = jwtservices.signAccessToken({ _id: user._id }, "30m");
     const refreshToken = jwtservices.signRefreshToken({ _id: user._id }, "60m");
-    
+
+    // update refresh token in database
     try {
       await RefreshToken.updateOne(
         {
@@ -136,15 +137,14 @@ const authController = {
     } catch (error) {
       return next(error);
     }
-
     res.cookie("accessToken", accessToken, {
       maxAge: 1000 * 60 * 60 * 24,
-      httpOnly: true,
+      httpOnly:true,
     });
 
     res.cookie("refreshToken", refreshToken, {
       maxAge: 1000 * 60 * 60 * 24,
-      httpOnly: true,
+      httpOnly:true,
     });
     const user_DTO = new userDTO(user);
     return res.status(200).json({ user: user_DTO, auth: true });
@@ -164,6 +164,53 @@ const authController = {
     // 2. response
     res.status(200).json({ user: null, auth: false });
   },
+  /////update set
+  async updateUser(req,res,next){
+   const updateschema=joi.object({
+    id: joi.string().regex(mongodbIdPattern).required(),
+    userName: joi.string().min(3).max(15).required(),
+    userEmail: joi.string().email().required(),
+    userImage:joi.string(),
+   });
+   try{
+    let url="http://localhost:8000/files/";
+    const url_image=req.file.filename;
+    req.body.userImage=url+url_image;
+    const {error}=updateschema.validate(req.body);
+    if (error) {
+        return next(error);
+    }
+    const {id,userName,userEmail,userImage}=req.body;
+    let user_data;
+    
+    user_data = await UserModel.findOneAndUpdate({ _id: id },{userName:userName,userEmail:userEmail,userImage:userImage},{new:true});
+    return res.status(200).json({message:'updated successfully'});
+    } catch (error) {
+      return next(error);
+    }
+  },
+  async passwordreset(req,res,next){
+    const Resetschema=joi.object({
+      userEmail: joi.string().email().required(),
+      userPassword: joi.string().required(),
+      Confirm_Password: joi.ref("userPassword"),
+     });
+     const { error } = Resetschema.validate(req.body);
+     if (error) {
+        return next(error);
+    }
+     const {userEmail,userPassword} = req.body;
+     let user_data;
+     const Hashpassword = await bcrypt.hash(userPassword, 10);
+     try {
+       user_data = await UserModel.findOneAndUpdate({ userEmail: userEmail },{userPassword:Hashpassword});
+       return res.status(200).json({auth:true});
+     } catch (error) {
+       return next(error);
+     }
+     
+
+  },
   //////refresh
   async Refresh(req, res, next) {
     
@@ -178,7 +225,6 @@ const authController = {
         status: 401,
         message: "Unauthorized",
       };
-
       return next(error);
     }
 
@@ -226,6 +272,36 @@ const authController = {
 
     return res.status(200).json({ user: userDto, auth: true });
   },
+  async getUsers(req,res,next){
+    try {
+      const allUsers = await UserModel.find({});
+      const UserDTOarr = [];
+      for (let i = 0; i < allUsers.length; i++) {
+        const userdto = new userDTO(allUsers[i]);
+        UserDTOarr.push(userdto);
+      }
+      return res.status(200).json({ UserData:UserDTOarr });
+    } catch (error) {
+      return next(error);
+    }
+  },
+  async deleteUser(req,res,next){
+    const deleteSchema = joi.object({
+      id: joi.string().regex(mongodbIdPattern).required(),
+    });
+
+    const { error } = deleteSchema.validate(req.params);
+    
+    const { id } = req.params;
+    try {
+      await UserModel.deleteOne({ _id : id });
+    } catch (error) {
+      return next(error);
+    }
+
+    return res.status(200).json({ message: "user deleted" });
+}
 
 };
 module.exports = authController;
+

@@ -21,6 +21,10 @@ UserRoutes.post('/logout',auth,authController.Logout);
 
 UserRoutes.get('/refresh',authController.Refresh);
 
-
-
+//////////// update 
+UserRoutes.put("/update",auth,upload.single('image'),authController.updateUser);
+UserRoutes.put("/reset",authController.passwordreset);
+////getallusers
+UserRoutes.get('/all',auth,authController.getUsers);
+UserRoutes.delete('/delete/:id',auth,authController.deleteUser);
 module.exports=UserRoutes;

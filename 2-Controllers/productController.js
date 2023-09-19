@@ -8,54 +8,49 @@ const productController = {
   // for creating the product
   async createProduct(req, res, next) {
     try {
-   console.log("add product call")
-   //console.log("files : ",req.files)
-  // console.log("body : ",req.body)
     const createproductschema = joi.object({
       productName: joi.string().required(),
       price: joi.number().required(),
-      nature: joi.string().required(),
-      discription: joi.string().required(),
-      favorite:joi.bool(),
+      category:joi.string().required(),
+      description: joi.string().required(),
       discount: joi.number(),
-      //image: joi.array().required(),
-     // video: joi.string().required(),
+      image: joi.array().required(),
+      video: joi.string().required(),
+      landingImage:joi.string().required(),
     });
-    // const { error } = createproductschema.validate(req.body);
-    // if (error) {
-    //   return next(error);
-    // }
+   
  let url="http://localhost:8000/files/";
-
- req.body.landingImage=url+req.files["landingImage"][0].filename;
- req.body.video=url+req.files["video"][0].filename;
- if (req.files && req.files["image"]) {
-  req.body.image = req.files["image"].map(image => url + image.filename);
+const landing=req.files.landingImage[0].filename;
+const video_data=req.files.video[0].filename;
+ req.body.landingImage=url+landing;
+ req.body.video=url+video_data;
+ const image_data=req.files.image;
+console.log(image_data);
+ if (req.files && req.files.image) {
+  req.body.image = req.files.image.map(image => url + image.filename);
 } else {
   req.body.image = [];
 }
-console.log(req.body)
-   
-    const { productName, price, nature,landingImage, description, discount, image, video } =
+  const { error } = createproductschema.validate(req.body);
+    if (error) {
+      return next(error);
+    }  
+    const { productName, price,category,description, discount, image, video,landingImage} =
       req.body;
 
     const newProduct = new ProductModel({
         productName, 
         price, 
-        nature, 
+        category,
         description, 
-        favorite:false,
         discount, 
         image,
         video,
         landingImage
       });
      const data= await newProduct.save();
-     res.send(data)
-      
-          // const productDto = new productDTO(newProduct);
-      
-          // return res.status(201).json({ product: productDto });
+     const productDto = new productDTO(newProduct);
+     return res.status(201).json({ product: productDto });
     } catch (error) {
       console.log(error)
       return next(error);

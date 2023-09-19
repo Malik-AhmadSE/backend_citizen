@@ -3,11 +3,11 @@ const mongoose=require('mongoose');
 const productSchema=mongoose.Schema({
     productName :{type:String,required:true},
     price:{type:mongoose.Types.Decimal128,required:true},
-    nature:{type:String},
+    category:{type:String},
     description:{type:String,required:true},
     favorite:{type:Boolean,default:false},
     discount:{type:Number},
-    image:{type:Array,},
+    image:{type:Array},
     video:{type:String},
     landingImage:{type:String}
 },

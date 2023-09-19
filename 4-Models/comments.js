@@ -1,8 +1,10 @@
 const mongoose=require('mongoose');
 
 const commentSchema=mongoose.Schema({
-    userName :{type:mongoose.SchemaTypes.ObjectId,ref:'user'},
+    userName :{type:String,required:true},
     commentData:{type:String},
+    reply:{type:String,default:''},
+    userImage:{type:String},
 },
     {timestamps:true}
 )

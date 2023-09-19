@@ -6,16 +6,13 @@ const auth = async (req, res, next) => {
   try {
     // 1. refresh, access token validation
     const { refreshToken, accessToken } = req.cookies;
-
     if (!refreshToken || !accessToken) {
       const error = {
         status: 401,
         message: "Unauthorized",
       };
-
       return next(error);
     }
-
     let _id;
 
     try {
