@@ -13,6 +13,9 @@ const UserRoutes = require('./1-Routes/UserRoutes');
 const ProductRoutes = require('./1-Routes/ProductRoutes');
 const CrouselRoutes=require("./1-Routes/crouselRoutes");
 const CommentRoutes=require('./1-Routes/commentRoutes');
+const FavRoutes=require('./1-Routes/favorite');
+const AdminRoutes=require('./1-Routes/adminRoutes');
+
 const cors=require('cors');
 app.use(cookieParser());
 app.use(
@@ -33,6 +36,9 @@ app.use("/user",UserRoutes);
 app.use("/product",ProductRoutes);
 app.use("/crousel",CrouselRoutes);
 app.use("/comment",CommentRoutes);
+app.use("/rating",Favoutes);
+app.use("/admin",AdminRoutes);
+
 app.use(errorHandler);
 app.get("/",(req,res)=>{
     res.send("hello world")

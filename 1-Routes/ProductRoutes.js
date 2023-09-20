@@ -21,7 +21,7 @@ ProductRoutes.post('/add',upload.fields([
 // 3.update product by id 
 ProductRoutes.put('/update',auth,productController.updateProduct);
 // 4.get product by id 
-ProductRoutes.get('/product/:id',productController.getProductById);
+ProductRoutes.get('/single/:id',productController.getProductById);
 // 5.delete product by id
 ProductRoutes.delete('/delete/:id',auth,productController.deleteProductById);
 
