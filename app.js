@@ -36,7 +36,7 @@ app.use("/user",UserRoutes);
 app.use("/product",ProductRoutes);
 app.use("/crousel",CrouselRoutes);
 app.use("/comment",CommentRoutes);
-app.use("/rating",Favoutes);
+app.use("/rating",FavRoutes);
 app.use("/admin",AdminRoutes);
 
 app.use(errorHandler);
