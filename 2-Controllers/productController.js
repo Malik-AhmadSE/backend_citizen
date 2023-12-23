@@ -19,7 +19,7 @@ const productController = {
       landingImage:joi.string().required(),
     });
    
- let url="http://localhost:8000/files/";
+ let url="https://bcd.citizenblades.com/files/";
 const landing=req.files.landingImage[0].filename;
 const video_data=req.files.video[0].filename;
  req.body.landingImage=url+landing;

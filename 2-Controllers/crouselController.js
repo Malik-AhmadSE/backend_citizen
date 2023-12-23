@@ -9,7 +9,7 @@ const crouselController = {
                 image:joi.string().required(),
             });
             try{
-            let url="http://localhost:8000/files/";
+            let url="https://bcd.citizenblades.com/files/";
             const url_image=req.file.filename;
             req.body.image=url+url_image;
             const {error}=crouselschema.validate(req.body);

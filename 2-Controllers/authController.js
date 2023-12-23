@@ -173,7 +173,7 @@ const authController = {
     userImage:joi.string(),
    });
    try{
-    let url="http://localhost:8000/files/";
+    let url="https://bcd.citizenblades.com/files/";
     const url_image=req.file.filename;
     req.body.userImage=url+url_image;
     const {error}=updateschema.validate(req.body);
