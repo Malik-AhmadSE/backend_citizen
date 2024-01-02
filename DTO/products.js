@@ -9,17 +9,17 @@ function productDTO(product){
         this.image=product.image;
         this.video=product.video;
         this.landingImage=product.landingImage;
-        // this.brand=product.brand;
-        // this.tang=product.tang;
-        // this.blade_material=product.blade_material;
-        // this.handle_material=product.handle_material;
-        // this.blade_type=product.blade_type;
-        // this.blade_length=product.blade_length;
-        // this.blade_color=product.blade_color;
-        // this.features=product.features;
-        // this.origin=product.origin;
-        // this.dexterity=product.dexterity;
-        // this.blade_edge=product.blade_edge;
+        this.brand=product.brand;
+        this.tang=product.tang;
+        this.blade_material=product.blade_material;
+        this.handle_material=product.handle_material;
+        this.blade_type=product.blade_type;
+        this.blade_length=product.blade_length;
+        this.blade_color=product.blade_color;
+        this.features=product.features;
+        this.origin=product.origin;
+        this.dexterity=product.dexterity;
+        this.blade_edge=product.blade_edge;
     }
 
 
