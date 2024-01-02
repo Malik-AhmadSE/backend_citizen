@@ -17,9 +17,21 @@ const productController = {
       image: joi.array().required(),
       video: joi.string().required(),
       landingImage:joi.string().required(),
+      brand:joi.string(),
+      tang:joi.string(),
+      blade_material:joi.string(),
+      handle_material:joi.string(),
+      blade_type:joi.string(),
+      blade_length:joi.string(),
+      blade_color:joi.string(),
+      features:joi.string(),
+      origin:joi.string(),
+      dexterity:joi.string(),
+      blade_edge:joi.string()
     });
    
  let url="https://bcd.citizenblades.com/files/";
+// let url="https://localhost:8000/files/";
 const landing=req.files.landingImage[0].filename;
 const video_data=req.files.video[0].filename;
  req.body.landingImage=url+landing;
@@ -35,7 +47,7 @@ console.log(image_data);
     if (error) {
       return next(error);
     }  
-    const { productName, price,category,description, discount, image, video,landingImage} =
+    const { productName,price,category,brand,tang,blade_material,handle_material,blade_type,blade_length,blade_color,features,origin,dexterity,blade_edge,description, discount,landingImage,image, video} =
       req.body;
 
     const newProduct = new ProductModel({
@@ -46,7 +58,18 @@ console.log(image_data);
         discount, 
         image,
         video,
-        landingImage
+        landingImage,
+        brand,
+        tang,
+        blade_material,
+        handle_material,
+        blade_type,
+        blade_length,
+        blade_color,
+        features,
+        origin,
+        dexterity,
+        blade_edge
       });
      const data= await newProduct.save();
      const productDto = new productDTO(newProduct);
@@ -69,7 +92,7 @@ console.log(image_data);
                   const productdto = new productDTO(allProduct[i]);
                   productDTOarr.push(productdto);
                 }
-          
+                console.log(productDTOarr)
                 return res.status(200).json({ products: productDTOarr });
               } catch (error) {
                 return next(error);

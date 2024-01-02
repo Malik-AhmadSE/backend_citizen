@@ -58,7 +58,6 @@ const favoriteController = {
         favdto.favoriteCount = favoriteCountMap.get(productId) || 0;
         FavDTOarr.push(favdto);
       }
-  
       return res.status(200).json({ favData: FavDTOarr });
     } catch (error) {
       return next(error);

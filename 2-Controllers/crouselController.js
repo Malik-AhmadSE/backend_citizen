@@ -38,6 +38,7 @@ const crouselController = {
           const crouseldto = new crouselDTO(allCrousels[i]);
           CrouselDTOarr.push(crouseldto);
         }
+        console.log(CrouselDTOarr)
         return res.status(200).json({ CrouselData:CrouselDTOarr });
       } catch (error) {
         return next(error);

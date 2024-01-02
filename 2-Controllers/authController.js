@@ -280,6 +280,7 @@ const authController = {
         const userdto = new userDTO(allUsers[i]);
         UserDTOarr.push(userdto);
       }
+      console.log(allUsers)
       return res.status(200).json({ UserData:UserDTOarr });
     } catch (error) {
       return next(error);
