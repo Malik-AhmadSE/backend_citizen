@@ -14,7 +14,7 @@ const productController = {
       category:joi.string().required(),
       description: joi.string().required(),
       discount: joi.number(),
-      image: joi.array().required(),
+      image: joi.string().required(),
       video: joi.string().required(),
       landingImage:joi.string().required(),
       brand:joi.string(),
@@ -30,26 +30,26 @@ const productController = {
       blade_edge:joi.string()
     });
    
- let url="https://bcd.citizenblades.com/files/";
-// let url="https://localhost:8000/files/";
-const landing=req.files.landingImage[0].filename;
-const video_data=req.files.video[0].filename;
- req.body.landingImage=url+landing;
- req.body.video=url+video_data;
- const image_data=req.files.image;
-console.log(image_data);
- if (req.files && req.files.image) {
-  req.body.image = req.files.image.map(image => url + image.filename);
-} else {
-  req.body.image = [];
-}
+// let url="https://bcd.citizenblades.com/files/";
+// // let url="https://localhost:8000/files/";
+// const landing=req.files.landingImage[0].filename;
+// const video_data=req.files.video[0].filename;
+//  req.body.landingImage=url+landing;
+//  req.body.video=url+video_data;
+//  const image_data=req.files.image;
+// console.log(image_data);
+//  if (req.files && req.files.image) {
+//   req.body.image = req.files.image.map(image => url + image.filename);
+// } else {
+//   req.body.image = [];
+// }
   const { error } = createproductschema.validate(req.body);
     if (error) {
       return next(error);
     }  
-    const { productName,price,category,brand,tang,blade_material,handle_material,blade_type,blade_length,blade_color,features,origin,dexterity,blade_edge,description, discount,landingImage,image, video} =
+    const {productName,price,category,brand,tang,blade_material,handle_material,blade_type,blade_length,blade_color,features,origin,dexterity,blade_edge,description, discount,landingImage,image, video} =
       req.body;
-
+    console.log(req.body);
     const newProduct = new ProductModel({
         productName, 
         price, 

@@ -12,12 +12,7 @@ ProductRoutes.get('/all',productController.getAll);
 
 // 2.create product
 
-ProductRoutes.post('/add',upload.fields([
-    { name: 'image', maxCount: 5 },
-    { name: 'video', maxCount: 1 },
-    {name:'landingImage',maxCount:1}
-
-  ]),productController.createProduct);
+ProductRoutes.post('/add',productController.createProduct);
 // 3.update product by id 
 ProductRoutes.put('/update',auth,productController.updateProduct);
 // 4.get product by id 
