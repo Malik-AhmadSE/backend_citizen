@@ -50,44 +50,60 @@ const AdminController = {
 
 const getUserMap = async () => {
   const thirtyDaysAgo = new Date();
-  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 29);
+  
   try {
+    console.log("Thirty days ago:", thirtyDaysAgo);
+
     const result = await User.aggregate([
       {
         $match: {
           createdAt: { $gte: thirtyDaysAgo },
         },
       },
-      {
-        $group: {
-          _id: {
-            year: { $year: "$createdAt" },
-            month: { $month: "$createdAt" },
-            day: { $dayOfMonth: "$createdAt" },
-          },
-          count: { $sum: 1 },
-        },
-      },
-      {
-        $project: {
-          _id: 0,
-          date: {
-            $dateFromParts: {
-              year: "$_id.year",
-              month: "$_id.month",
-              day: "$_id.day",
-            },
-          },
-          count: 1,
-        },
-      },
-      {
-        $sort: { date: 1 },
-      },
     ]);
 
-    return result;
+    console.log("After $match:", result);
+
+    const groupStage = {
+      $group: {
+        _id: {
+          year: { $year: "$createdAt" },
+          month: { $month: "$createdAt" },
+          day: { $dayOfMonth: "$createdAt" },
+        },
+        count: { $sum: 1 },
+      },
+    };
+
+    const resultAfterGroup = await User.aggregate([groupStage]);
+    
+    console.log("After $group:", resultAfterGroup);
+
+    const projectStage = {
+      $project: {
+        _id: 0,
+        date: {
+          $dateFromParts: {
+            year: "$_id.year",
+            month: "$_id.month",
+            day: "$_id.day",
+          },
+        },
+        count: 1,
+      },
+    };
+
+    const resultAfterProject = await User.aggregate([groupStage, projectStage]);
+
+    console.log("After $project:", resultAfterProject);
+
+    const sortStage = { $sort: { date: 1 } };
+
+    const finalResult = await User.aggregate([groupStage, projectStage, sortStage]);
+
+    console.log(finalResult);
+    return finalResult;
   } catch (err) {
     console.error(err);
     throw err;
