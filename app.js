@@ -13,9 +13,10 @@ const UserRoutes = require('./1-Routes/UserRoutes');
 const ProductRoutes = require('./1-Routes/ProductRoutes');
 const CrouselRoutes=require("./1-Routes/crouselRoutes");
 const CommentRoutes=require('./1-Routes/commentRoutes');
+const OrderRoutes=require('./1-Routes/OrderRoute');
 const FavRoutes=require('./1-Routes/favorite');
 const AdminRoutes=require('./1-Routes/adminRoutes');
-
+const stripe = require('./1-Routes/stripe');
 const cors=require('cors');
 app.use(cookieParser());
 app.use(
@@ -38,10 +39,11 @@ app.use("/crousel",CrouselRoutes);
 app.use("/comment",CommentRoutes);
 app.use("/rating",FavRoutes);
 app.use("/admin",AdminRoutes);
-
+app.use("/order",OrderRoutes);
+app.use("/stripe", stripe);
 app.use(errorHandler);
 app.get("/",(req,res)=>{
-    res.send("hello world")
+    res.send("hello world");
 })
 app.listen(port,host,()=>{
     console.log(`http://${host}:${port}`);

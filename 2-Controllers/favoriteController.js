@@ -42,7 +42,7 @@ const favoriteController = {
   },  
   async getallFavorite(req, res, next) {
     try {
-      const allFav = await rating.find({}).populate('productId');
+      const allFav = await rating.find({favorite:true}).populate('productId');
       const favoriteCountMap = new Map();
       for (let i = 0; i < allFav.length; i++) {
         const fav = allFav[i];

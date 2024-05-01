@@ -1,16 +1,20 @@
-const mongoose=require('mongoose');
+const mongoose = require("mongoose");
 
-const saleSchema=mongoose.Schema({
-    userDetail:{type:mongoose.SchemaTypes.ObjectId,ref:'user'},
-    productDetail :{type:mongoose.SchemaTypes.ObjectId,ref:'product'},
-},
-    {timestamps:true}
-)
+const orderSchema = new mongoose.Schema(
+  {
+    userId: { type: String, required: true },
+    products: [
+      { productId: { type: String }, quantity: { type: Number, default: 1 } },
+    ],
+    subtotal: { type: Number, required: true },
+    total: { type: Number, required: true },
+    shipping: { type: Object, required: true },
+    delivery_status: { type: String, default: "pending" },
+    payment_status: { type: String, required: true },
+  },
+  { timestamps: true }
+);
 
+const Order = mongoose.model("Order", orderSchema);
 
-// creating model of user
-
-const SaleModel=mongoose.model('sale',saleSchema);
-
-
-module.exports=SaleModel;
+exports.Order = Order;

@@ -1,30 +1,26 @@
 const joi = require("joi");
 const rating = require("../4-Models/rating");
 const User = require("../4-Models/user");
-const Sales = require("../4-Models/sales");
+const {Order} = require("../4-Models/sales");
 const comment=require("../4-Models/comments");
 const ProductModel = require("../4-Models/products");
 const offers=require("../4-Models/crousal");
-const mongodbIdPattern = /^[0-9a-fA-F]{24}$/;
 
 const AdminController = {
   async getDashboard(req, res, next) {
     try {
       const products = await ProductModel.countDocuments();
       const user = await User.countDocuments();
-      const sale = await Sales.countDocuments();
+      const sale = await Order.countDocuments();
       const Comment = await comment.countDocuments();
       const Offers = await offers.countDocuments();
-      const totalsales = await Sales.find({});
       const favorite = await rating.countDocuments({ favorite: true });
-      let result = 0;
+      const totalsales = await Order.find({ delivery_status: 'Success' });
+      const totalAmount = totalsales.reduce((total, order) => {
+      return total + order.total;
+      }, 0);
 
-      // Extracting totalprice from the model
-      const totalprice = totalsales.map((sale) => sale.totalprice);
-      for (let i = 0; i < totalprice.length; i++) {
-        result += totalprice[i];
-      }
-
+      console.log('Total sales where status is "Success":', totalAmount);
       const UserChart = await getUserMap();
       const OrderChart = await getOrderMap();
       console.log(Offers)
@@ -32,7 +28,7 @@ const AdminController = {
         products: products,
         user: user,
         sale: sale,
-        totalearn: result,
+        totalearn: (totalAmount/100),
         favorite: favorite,
         comments:Comment,
         offer:Offers,
@@ -115,7 +111,7 @@ const getOrderMap = async () => {
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
   try {
-    const result = await Sales.aggregate([
+    const result = await Order.aggregate([
       {
         $match: {
           createdAt: { $gte: thirtyDaysAgo },

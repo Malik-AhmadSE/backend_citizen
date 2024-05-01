@@ -80,7 +80,72 @@ const productController = {
     }
   },
   // for updating product
-  async updateProduct(req, res, next) {},
+  async updateProduct(req, res, next) {
+    try {
+      const updateProductSchema = joi.object({
+        productName: joi.string(),
+        price: joi.number(),
+        category: joi.string(),
+        description: joi.string(),
+        discount: joi.number(),
+        image: joi.string(),
+        video: joi.string(),
+        landingImage: joi.string(),
+        brand: joi.string(),
+        tang: joi.string(),
+        blade_material: joi.string(),
+        handle_material: joi.string(),
+        blade_type: joi.string(),
+        blade_length: joi.string(),
+        blade_color: joi.string(),
+        features: joi.string(),
+        origin: joi.string(),
+        dexterity: joi.string(),
+        blade_edge: joi.string(),
+      });
+  
+      const { error } = updateProductSchema.validate(req.body);
+      if (error) {
+        return next(error);
+      }
+  
+      const { productName, price, category, brand, tang, blade_material, handle_material, blade_type, blade_length, blade_color, features, origin, dexterity, blade_edge, description, discount, landingImage, image, video } = req.body;
+      console.log(req.body)
+      const updatedFields = {
+        ...(productName && { productName }),
+        ...(price && { price }),
+        ...(category && { category }),
+        ...(description && { description }),
+        ...(discount && { discount }),
+        ...(image && { image }),
+        ...(video && { video }),
+        ...(landingImage && { landingImage }),
+        ...(brand && { brand }),
+        ...(tang && { tang }),
+        ...(blade_material && { blade_material }),
+        ...(handle_material && { handle_material }),
+        ...(blade_type && { blade_type }),
+        ...(blade_length && { blade_length }),
+        ...(blade_color && { blade_color }),
+        ...(features && { features }),
+        ...(origin && { origin }),
+        ...(dexterity && { dexterity }),
+        ...(blade_edge && { blade_edge }),
+      };
+  
+      const updatedProduct = await ProductModel.findByIdAndUpdate(req.params.id, updatedFields, { new: true });
+  
+      if (!updatedProduct) {
+        return res.status(404).json({ message: 'Product not found' });
+      }
+  
+      const productDto = new productDTO(updatedProduct);
+      return res.status(200).json({ product: productDto });
+    } catch (error) {
+      console.log(error);
+      return next(error);
+    }
+  },  
   // for getting all product
   async getAll(req, res, next) {
         try {

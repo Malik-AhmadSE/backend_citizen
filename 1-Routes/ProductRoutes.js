@@ -14,7 +14,7 @@ ProductRoutes.get('/all',productController.getAll);
 
 ProductRoutes.post('/add',productController.createProduct);
 // 3.update product by id 
-ProductRoutes.put('/update',auth,productController.updateProduct);
+ProductRoutes.put('/update/:id',productController.updateProduct);
 // 4.get product by id 
 ProductRoutes.get('/single/:id',productController.getProductById);
 // 5.delete product by id

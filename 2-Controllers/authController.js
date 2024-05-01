@@ -5,6 +5,7 @@ const userDTO = require("../DTO/user");
 const RefreshToken = require("../4-Models/token");
 const jwtservices = require("../3-Services/jwtservice");
 const mongodbIdPattern = /^[0-9a-fA-F]{24}$/;
+const BACKEND_SERVER_PATH=process.env.BACKEND_SERVER_PATH
 const authController = {
   async Signup(req, res, next) {
     const SignupSchema = joi.object({
@@ -173,7 +174,7 @@ const authController = {
     userImage:joi.string(),
    });
    try{
-    let url="https://bcd.citizenblades.com/files/";
+    let url=`${BACKEND_SERVER_PATH}/files/`;
     const url_image=req.file.filename;
     req.body.userImage=url+url_image;
     const {error}=updateschema.validate(req.body);

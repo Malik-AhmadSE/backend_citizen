@@ -4,7 +4,6 @@ const UserDTO = require("../../DTO/user");
 
 const auth = async (req, res, next) => {
   try {
-    // 1. refresh, access token validation
     const { refreshToken, accessToken } = req.cookies;
     if (!refreshToken || !accessToken) {
       const error = {

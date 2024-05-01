@@ -2,6 +2,7 @@ const joi = require("joi");
 const crouselModel=require("../4-Models/crousal");
 const crouselDTO=require("../DTO/Crouseldto");
 const mongodbIdPattern = /^[0-9a-fA-F]{24}$/;
+const BACKEND_SERVER_PATH=process.env.BACKEND_SERVER_PATH
 const crouselController = {
     async createcrousel(req,res,next){
             const crouselschema=joi.object({
@@ -9,7 +10,7 @@ const crouselController = {
                 image:joi.string().required(),
             });
             try{
-            let url="https://bcd.citizenblades.com/files/";
+            let url=`${BACKEND_SERVER_PATH}/files/`;
             const url_image=req.file.filename;
             req.body.image=url+url_image;
             const {error}=crouselschema.validate(req.body);
