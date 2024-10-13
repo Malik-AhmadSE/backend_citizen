@@ -4,75 +4,48 @@ const fs = require('fs');
 const ProductModel=require('../4-Models/products');
 const productDTO=require('../DTO/products');
 const mongodbIdPattern = /^[0-9a-fA-F]{24}$/;
+const cloudinary = require('cloudinary').v2;
+
+
+function extractPublicId(url) {
+  const regex = /\/upload\/(?:v\d+\/)?(.+?)(?:\.[a-z]+)?$/;
+  const match = url.match(regex);
+  return match ? match[1] : null;
+}
 const productController = {
+ 
   // for creating the product
   async createProduct(req, res, next) {
+    console.log('url')
     try {
     const createproductschema = joi.object({
       productName: joi.string().required(),
       price: joi.number().required(),
-      category:joi.string().required(),
       description: joi.string().required(),
       discount: joi.number(),
-      image: joi.string().required(),
-      video: joi.string().required(),
-      landingImage:joi.string().required(),
-      brand:joi.string(),
-      tang:joi.string(),
-      blade_material:joi.string(),
-      handle_material:joi.string(),
-      blade_type:joi.string(),
-      blade_length:joi.string(),
-      blade_color:joi.string(),
-      features:joi.string(),
-      origin:joi.string(),
-      dexterity:joi.string(),
-      blade_edge:joi.string()
     });
-   
-// let url="https://bcd.citizenblades.com/files/";
-// // let url="https://localhost:8000/files/";
-// const landing=req.files.landingImage[0].filename;
-// const video_data=req.files.video[0].filename;
-//  req.body.landingImage=url+landing;
-//  req.body.video=url+video_data;
-//  const image_data=req.files.image;
-// console.log(image_data);
-//  if (req.files && req.files.image) {
-//   req.body.image = req.files.image.map(image => url + image.filename);
-// } else {
-//   req.body.image = [];
-// }
+    const landingImage = req.files.landingImage ? req.files.landingImage[0] : null;
+    const video = req.files.video ? req.files.video[0] : null;
+    const images = req.files.images || [];
   const { error } = createproductschema.validate(req.body);
     if (error) {
       return next(error);
     }  
-    const {productName,price,category,brand,tang,blade_material,handle_material,blade_type,blade_length,blade_color,features,origin,dexterity,blade_edge,description, discount,landingImage,image, video} =
-      req.body;
-    console.log(req.body);
-    const newProduct = new ProductModel({
-        productName, 
-        price, 
-        category,
-        description, 
-        discount, 
-        image,
-        video,
-        landingImage,
-        brand,
-        tang,
-        blade_material,
-        handle_material,
-        blade_type,
-        blade_length,
-        blade_color,
-        features,
-        origin,
-        dexterity,
-        blade_edge
-      });
+    const {productName,price,description, discount} =req.body;
+    const fileData = {
+      productName:productName, 
+      price:price, 
+      description:description, 
+      discount:discount, 
+      landingImage: landingImage ? landingImage.path : null, 
+      video: video ? video.path : null,                    
+      images: images.map(image => image.path),             
+    };
+
+    const newProduct = new ProductModel(fileData);
      const data= await newProduct.save();
      const productDto = new productDTO(newProduct);
+     console.log(productDto);
      return res.status(201).json({ product: productDto });
     } catch (error) {
       console.log(error)
@@ -82,70 +55,70 @@ const productController = {
   // for updating product
   async updateProduct(req, res, next) {
     try {
-      const updateProductSchema = joi.object({
-        productName: joi.string(),
-        price: joi.number(),
-        category: joi.string(),
-        description: joi.string(),
-        discount: joi.number(),
-        image: joi.string(),
-        video: joi.string(),
-        landingImage: joi.string(),
-        brand: joi.string(),
-        tang: joi.string(),
-        blade_material: joi.string(),
-        handle_material: joi.string(),
-        blade_type: joi.string(),
-        blade_length: joi.string(),
-        blade_color: joi.string(),
-        features: joi.string(),
-        origin: joi.string(),
-        dexterity: joi.string(),
-        blade_edge: joi.string(),
-      });
+      const { id } = req.params;
   
-      const { error } = updateProductSchema.validate(req.body);
-      if (error) {
-        return next(error);
+      // Fetch existing product
+      const product = await ProductModel.findById(id);
+      if (!product) return res.status(404).json({ message: 'Product not found' });
+  
+      const updatedData = {};
+      const { productName, price, description, discount } = req.body;
+  
+      // Update fields conditionally
+      if (productName) updatedData.productName = productName;
+      if (price) updatedData.price = price;
+      if (description) updatedData.description = description;
+      if (typeof discount !== 'undefined') updatedData.discount = discount;
+  
+      // Handle landing image upload
+      if (req.file) { // Check if new file is uploaded
+        // Delete existing landing image if it exists
+        if (product.landingImage) {
+          const publicId = extractPublicId(product.landingImage);
+          await cloudinary.uploader.destroy(publicId);
+        }
+        const uploadResult = await cloudinary.uploader.upload(req.file.path);
+        updatedData.landingImage = uploadResult.secure_url; // Update with new URL
+      } else {
+        updatedData.landingImage = product.landingImage; // Keep existing if not changed
       }
   
-      const { productName, price, category, brand, tang, blade_material, handle_material, blade_type, blade_length, blade_color, features, origin, dexterity, blade_edge, description, discount, landingImage, image, video } = req.body;
-      console.log(req.body)
-      const updatedFields = {
-        ...(productName && { productName }),
-        ...(price && { price }),
-        ...(category && { category }),
-        ...(description && { description }),
-        ...(discount && { discount }),
-        ...(image && { image }),
-        ...(video && { video }),
-        ...(landingImage && { landingImage }),
-        ...(brand && { brand }),
-        ...(tang && { tang }),
-        ...(blade_material && { blade_material }),
-        ...(handle_material && { handle_material }),
-        ...(blade_type && { blade_type }),
-        ...(blade_length && { blade_length }),
-        ...(blade_color && { blade_color }),
-        ...(features && { features }),
-        ...(origin && { origin }),
-        ...(dexterity && { dexterity }),
-        ...(blade_edge && { blade_edge }),
-      };
-  
-      const updatedProduct = await ProductModel.findByIdAndUpdate(req.params.id, updatedFields, { new: true });
-  
-      if (!updatedProduct) {
-        return res.status(404).json({ message: 'Product not found' });
+      // Handle video upload similarly
+      if (req.files.video) { // Assuming video can be uploaded
+        if (product.video) {
+          const publicId = extractPublicId(product.video);
+          await cloudinary.uploader.destroy(publicId, { resource_type: 'video' });
+        }
+        const uploadResult = await cloudinary.uploader.upload(req.files.video[0].path, { resource_type: 'video' });
+        updatedData.video = uploadResult.secure_url; // Update with new URL
+      } else {
+        updatedData.video = product.video; // Keep existing
       }
   
-      const productDto = new productDTO(updatedProduct);
-      return res.status(200).json({ product: productDto });
+      // Handle images
+      const images = req.files.images || [];
+      if (images.length > 0) {
+        // Handle new images: delete existing and upload new ones
+        if (product.images) {
+          product.images.forEach(imageUrl => {
+            const publicId = extractPublicId(imageUrl);
+            cloudinary.uploader.destroy(publicId);
+          });
+        }
+        const uploadPromises = images.map(image => cloudinary.uploader.upload(image.path));
+        updatedData.images = await Promise.all(uploadPromises);
+      } else {
+        updatedData.images = product.images; // Keep existing if not changed
+      }
+  
+      // Update the product in the database
+      const updatedProduct = await ProductModel.findByIdAndUpdate(id, updatedData, { new: true });
+      return res.status(200).json({ product: updatedProduct });
     } catch (error) {
-      console.log(error);
+      console.error(error);
       return next(error);
     }
-  },  
+  },
   // for getting all product
   async getAll(req, res, next) {
         try {
@@ -157,7 +130,7 @@ const productController = {
                   const productdto = new productDTO(allProduct[i]);
                   productDTOarr.push(productdto);
                 }
-                console.log(productDTOarr)
+                console.log(productDTOarr);
                 return res.status(200).json({ products: productDTOarr });
               } catch (error) {
                 return next(error);
@@ -192,24 +165,91 @@ const productController = {
       const productdto = new productDTO(productbyid);
       return res.status(200).json({ product: productdto });
   },
-  // for deleting the product using id
+  // for deleting the produ
   async deleteProductById(req, res, next) {
     const deleteSchema = joi.object({
-      id: joi.string().regex(mongodbIdPattern).required(),
+      id: joi.string().regex(/^[0-9a-fA-F]{24}$/).required(), // MongoDB ObjectId validation
     });
 
     const { error } = deleteSchema.validate(req.params);
-    if(error){
-      return next(error);
-    }
-    const { id } = req.params;
-    try {
-      await ProductModel.deleteOne({ _id : id });
-    } catch (error) {
+    if (error) {
       return next(error);
     }
 
-    return res.status(200).json({ message: "product deleted" });
+    const { id } = req.params;
+
+    try {
+      // Find the product by ID
+      const product = await ProductModel.findById(id);
+      if (!product) {
+        return res.status(404).json({ message: 'Product not found' });
+      }
+
+      // Delete images and videos from Cloudinary
+      const promises = [];
+
+      // Extract and delete landing image
+      if (product.landingImage) {
+        const landingImagePublicId = extractPublicId(product.landingImage);
+        if (landingImagePublicId) {
+          promises.push(
+            cloudinary.uploader.destroy(landingImagePublicId, (error, result) => {
+              if (error) {
+                console.error('Error deleting landing image:', error);
+              } else {
+                console.log('Landing image deleted:', result);
+              }
+            })
+          );
+        }
+      }
+
+      // Extract and delete video
+      if (product.video) {
+        const videoPublicId = extractPublicId(product.video);
+        if (videoPublicId) {
+          promises.push(
+            cloudinary.uploader.destroy(videoPublicId, { resource_type: 'video' }, (error, result) => {
+              if (error) {
+                console.error('Error deleting video:', error);
+              } else {
+                console.log('Video deleted:', result);
+              }
+            })
+          );
+        }
+      }
+
+      // Extract and delete additional images
+      if (product.images && Array.isArray(product.images)) {
+        product.images.forEach((imageUrl) => {
+          const imagePublicId = extractPublicId(imageUrl);
+          if (imagePublicId) {
+            promises.push(
+              cloudinary.uploader.destroy(imagePublicId, (error, result) => {
+                if (error) {
+                  console.error('Error deleting image:', error);
+                } else {
+                  console.log('Image deleted:', result);
+                }
+              })
+            );
+          }
+        });
+      }
+
+      // Wait for all delete operations to finish
+      await Promise.all(promises);
+
+      // Now, delete the product from the database
+      await ProductModel.deleteOne({ _id: id });
+
+      return res.status(200).json({ message: 'Product and associated Cloudinary media deleted' });
+
+    } catch (error) {
+      console.error('Error deleting product:', error);
+      return next(error);
+    }
   },
 
 };

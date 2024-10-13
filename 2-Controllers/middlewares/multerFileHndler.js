@@ -1,17 +1,30 @@
-const multer = require('multer');
-const path = require('path');
+// middleware/upload.js
 
-var storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, path.join(__dirname, '../../public/files/'));
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
+const multer = require('multer');
+const cloudinary = require('../../config/Cloudinary');
+
+// Cloudinary storage configuration
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: async (req, file) => {
+    let folder = 'images';  
+    let resourceType = 'image'; 
+
+    if (file.mimetype.startsWith('video')) {
+      resourceType = 'video';
+      folder = 'videos';  // Video folder in Cloudinary
+    }
+
+    return {
+      folder: folder,
+      resource_type: resourceType,
+      public_id: file.originalname.split('.')[0], // File name without extension
+    };
   },
-  filename: function (req, file, cb) {
-    cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
-  }
 });
 
-module.exports.upload = multer({
-  storage: storage,
-  limits: { fieldSize: 5 * 1024 },
-})
 
+const upload = multer({ storage });
+
+module.exports = upload;

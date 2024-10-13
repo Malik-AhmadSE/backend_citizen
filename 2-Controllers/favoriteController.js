@@ -42,27 +42,41 @@ const favoriteController = {
   },  
   async getallFavorite(req, res, next) {
     try {
-      const allFav = await rating.find({favorite:true}).populate('productId');
+      console.log("triggered");
+      const allFav = await rating.find({ favorite: true }).populate('productId');
+      
+      if (!allFav || allFav.length === 0) {
+        console.log("no no");
+        return res.status(200).json({ favData: [], message: "No favorite data available." });
+      }
+  
       const favoriteCountMap = new Map();
-      for (let i = 0; i < allFav.length; i++) {
+      console.log("triggered");
+      for (let i = 0; i < allFav.length; i++) { // Change from <= to <
         const fav = allFav[i];
         const productId = fav.productId._id.toString();
         if (fav.favorite) {
           favoriteCountMap.set(productId, (favoriteCountMap.get(productId) || 0) + 1);
         }
       }
+      console.log("triggered");
+  
       const FavDTOarr = [];
+      console.log("triggered");
       for (let i = 0; i < allFav.length; i++) {
         const favdto = new allfavDTO(allFav[i]);
         const productId = allFav[i].productId._id.toString();
         favdto.favoriteCount = favoriteCountMap.get(productId) || 0;
         FavDTOarr.push(favdto);
       }
+      console.log("triggered");
+  
       return res.status(200).json({ favData: FavDTOarr });
     } catch (error) {
+      console.log(error);
       return next(error);
     }
-  },       
+  },  
   async getFavorite(req, res, next) {
     try {
       const getByIdSchema = joi.object({

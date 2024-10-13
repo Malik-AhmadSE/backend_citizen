@@ -4,7 +4,7 @@ const UserRoutes=express.Router();
 const authController = require('../2-Controllers/authController');
 const productController=require('../2-Controllers/productController');
 const auth = require('../2-Controllers/middlewares/auth');
-const {upload} =require("../2-Controllers/middlewares/multerFileHndler")
+const {upload} =require("../2-Controllers/middlewares/multer")
 /// signup ////
 
 UserRoutes.post('/signup',authController.Signup);
